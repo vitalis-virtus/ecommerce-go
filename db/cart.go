@@ -1,5 +1,9 @@
 package db
 
+import (
+	"errors"
+)
+
 var (
 	ErrCantFindProduct    = errors.New("can't find the product")
 	ErrCantDecodeProducts = errors.New("can't find the product")
