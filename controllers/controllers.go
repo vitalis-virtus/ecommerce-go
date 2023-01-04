@@ -219,6 +219,6 @@ func SearchProductByQuery() gin.HandlerFunc {
 		defer cancel()
 		c.IndentedJSON(http.StatusOK, searchProducts)
 	}
-}
+}	
 
 // func InstantBuy() gin.HandlerFunc {}
