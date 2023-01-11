@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/vitalis-virtus/ecommerce-go/db"
 	"github.com/vitalis-virtus/ecommerce-go/models"
+	generate "github.com/vitalis-virtus/ecommerce-go/tokens"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -117,6 +118,7 @@ func Login() gin.HandlerFunc {
 		defer cancel()
 
 		var user models.User
+		var foundUser models.User
 
 		if err := c.BindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -139,7 +141,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		token, refreshToken, _ := generate.TokenGenerator(*foundUser.Email, *foundUser.First_Name, *foundUser.Last_Name, *foundUser.User_ID)
+		token, refreshToken, _ := generate.TokenGenerator(*foundUser.Email, *foundUser.First_Name, *foundUser.Last_Name, foundUser.User_ID)
 		defer cancel()
 
 		generate.UpdateAllTokens(token, refreshToken, foundUser.User_ID)
@@ -155,7 +157,7 @@ func SearchProduct() gin.HandlerFunc {
 		var productList []models.Product
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
-		cursor, err := ProductConnection.Find(ctx, bson.D{{}})
+		cursor, err := ProductCollection.Find(ctx, bson.D{{}})
 		if err != nil {
 			c.IndentedJSON(http.StatusInternalServerError, "something went wrong, please try after some time")
 		}
@@ -219,6 +221,6 @@ func SearchProductByQuery() gin.HandlerFunc {
 		defer cancel()
 		c.IndentedJSON(http.StatusOK, searchProducts)
 	}
-}	
+}
 
 // func InstantBuy() gin.HandlerFunc {}
