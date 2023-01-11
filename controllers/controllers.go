@@ -170,7 +170,7 @@ func SearchProduct() gin.HandlerFunc {
 		}
 		defer cursor.Close()
 
-		if err := cursor.err(); err != nil {
+		if err := cursor.Err(); err != nil {
 			log.Println(err)
 			c.IndentedJSON(http.StatusBadRequest, "invalid")
 			return
