@@ -107,5 +107,4 @@ func UpdateTokens(signedToken string, signedRefreshToken string, userID string) 
 		log.Panic(err)
 		return
 	}
-
 }
