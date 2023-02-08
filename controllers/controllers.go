@@ -150,7 +150,27 @@ func Login() gin.HandlerFunc {
 	}
 }
 
-func ProductViewAdmin() gin.HandlerFunc {}
+func ProductViewAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		var products models.Product
+		defer cancel()
+
+		if err := c.BindJSON(&products); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		products.Product_ID = primitive.NewObjectID()
+		_, anyerr := ProductCollection.InsertOne(ctx, products)
+		if anyerr != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "not inserted"})
+			return
+		}
+		defer cancel()
+		c.JSON(http.StatusOK, "successfully added")
+	}
+}
 
 func SearchProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -168,7 +188,7 @@ func SearchProduct() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
-		defer cursor.Close()
+		defer cursor.Close(ctx)
 
 		if err := cursor.Err(); err != nil {
 			log.Println(err)
@@ -222,5 +242,3 @@ func SearchProductByQuery() gin.HandlerFunc {
 		c.IndentedJSON(http.StatusOK, searchProducts)
 	}
 }
-
-// func InstantBuy() gin.HandlerFunc {}

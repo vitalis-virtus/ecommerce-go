@@ -94,7 +94,7 @@ func (app *Application) RemoveItem() gin.HandlerFunc {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 
-		err := db.RemoveItemFromCart(ctx, app.prodCollection, app.userCollection, productID, userQueryID)
+		err = db.RemoveItemFromCart(ctx, app.prodCollection, app.userCollection, productID, userQueryID)
 		if err != nil {
 			c.IndentedJSON(http.StatusInternalServerError, err)
 			return
